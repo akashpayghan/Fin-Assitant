@@ -1,14 +1,21 @@
-
 import streamlit as st
 from openai import OpenAI
 import os, chromadb, uuid
 from dotenv import load_dotenv
-import streamlit as st
 
 load_dotenv()
 
 st.set_page_config(page_title="Personal Finance Assistant", layout="wide")
 st.title("Personal Finance Assistant")
+
+# Instructions for using the app
+st.markdown("""
+### How to Use This App
+1. **Upload Documents**: Use the sidebar on the left to upload financial documents in PDF, CSV, or TXT format. You can upload multiple files at once.
+2. **Process Documents**: Click the "Process" button in the sidebar to index the uploaded files. This prepares the documents for answering your questions.
+3. **Ask Questions**: In the main section, type your financial question in the chat input box at the bottom and press Enter.
+4. **View Answers**: The app will display answers based on the uploaded documents and AI processing. Relevant information from your documents will be used to provide accurate responses.
+""")
 
 init_error = None
 rag_engine = None
@@ -24,8 +31,6 @@ except Exception as e:
 if init_error:
     st.error(f"Startup error: {init_error}")
     st.stop()
-
-
 
 class RAGEngine:
     def __init__(self):
@@ -46,8 +51,6 @@ class RAGEngine:
         return self.client.chat.completions.create(
             model=self.chat_model, messages=messages, temperature=0.3, max_tokens=500
         ).choices[0].message.content
-
-
 
 uploaded = st.sidebar.file_uploader("Upload PDFs/CSVs/TXT", type=["pdf","csv","txt"], accept_multiple_files=True)
 if st.sidebar.button("Process") and uploaded:
